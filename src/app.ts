@@ -1,6 +1,6 @@
-const express = require('express');
-const bodyParser = require('body-parser');
-const { dialogflow } = require('actions-on-google');
+import express from 'express';
+import bodyParser from 'body-parser';
+import { dialogflow } from 'actions-on-google';
 
 const port = process.env.PORT || 3000;
 // Instantiate the Dialogflow client.
