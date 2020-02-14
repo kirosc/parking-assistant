@@ -3,12 +3,13 @@ import bodyParser from 'body-parser';
 import {
   dialogflow,
   Permission,
-  DialogflowConversation,
   Suggestions,
-  BrowseCarousel
+  Image,
+  List
 } from 'actions-on-google';
 import { Location, Vehicle } from './lib/interface';
-import { getAvailableParks } from './lib/helper';
+import { getAvailableParks, toString } from './lib/helper';
+import { readJSON } from './lib/io';
 
 const port = process.env.PORT || 3000;
 // Instantiate the Dialogflow client.
@@ -42,16 +43,44 @@ app.intent('vehicle_type', async (conv, { vehicle }) => {
 
   if (latitude === undefined || longitude === undefined) {
     conv.ask('唔好意思，我未有你嘅GPS位置！');
-    return
-  }  
+    return;
+  }
 
   let location: Location = { latitude, longitude };
   let parks = await getAvailableParks(vehicle as Vehicle, location);
-  
+
   if (parks.length === 0) {
-    conv.ask('現時附近未有空置車位！')
+    conv.ask('現時附近未有空置車位！');
   } else {
-    conv.ask('Testing');
+    let info = readJSON('parks');
+    let items: any = {};
+
+    for (let i = 0; i < parks.length && i < 5; i++) {
+      const park = parks[i];
+      const parkInfo = info[park.park_Id];
+      console.log(park);
+      console.log(parkInfo);
+      
+
+      items[park.park_Id] = {
+        title: parkInfo.name,
+        description: toString(park[vehicle as string][0]),
+        image: new Image({
+          url:
+            parkInfo.renditionUrls?.thumbnail ||
+            parkInfo.renditionUrls?.carpark_photo ||
+            'https://img.icons8.com/officel/120/000000/parking.png',
+          alt: parkInfo.name
+        })
+      };
+    }
+    conv.ask('以下係附近有空位嘅停車場。選擇其中一個嚟開始導航喇！');
+    conv.ask(
+      new List({
+        title: '附近2公里內有空位嘅停車場',
+        items
+      })
+    );
   }
 });
 

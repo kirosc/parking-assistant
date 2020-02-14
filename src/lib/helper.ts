@@ -21,6 +21,51 @@ export async function getAvailableParks(
   return res.filter((park: any) => park[vehicleTypes][0].vacancy > 0);
 }
 
+export function toString(park: any): string {
+  let str = '';
+
+  switch (park.vacancy_type) {
+    case 'A':
+      const { vacancy, vacancyEV, vacancyDIS } = park;
+      const parseVacancy = (vacancy: number) => {
+        if (vacancy > 0) {
+          return vacancy;
+        } else if (vacancy === 0) {
+          return '0';
+        } else {
+          return '❓停車場未能提供數據';
+        }
+      }
+      
+      str += '空置車位: ';
+      str += parseVacancy(vacancy);
+
+      // Electronic vehicle
+      if (vacancyEV) {
+        str += ' 電動車: ';
+        str += parseVacancy(vacancyEV);
+      }
+
+      // Disabled persons
+      if (vacancyDIS) {
+        str += ' 傷殘: ';
+        str += parseVacancy(vacancyDIS);
+      }
+      break;
+    case 'B':
+      if (park.vacancy > 0) {
+        str += '🈳有空置泊車位';
+      } else if (park.vacancy === 0) {
+        str += '🈵沒有空置泊車位';
+      } else {
+        str += '❓停車場未能提供數據';
+      }
+      break;
+  }
+
+  return str;
+}
+
 // Get vacancy of parks
 async function getVacancy(vehicleTypes: Vehicle, extent?: string) {
   const res = await axios.get('', {
