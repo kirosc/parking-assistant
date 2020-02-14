@@ -4,8 +4,11 @@ import {
   dialogflow,
   Permission,
   DialogflowConversation,
-  Suggestions
+  Suggestions,
+  BrowseCarousel
 } from 'actions-on-google';
+import { Location, Vehicle } from './lib/interface';
+import { getAvailableParks } from './lib/helper';
 
 const port = process.env.PORT || 3000;
 // Instantiate the Dialogflow client.
@@ -30,8 +33,26 @@ app.intent('actions_intent_PERMISSION', (conv, _, permissionGranted) => {
 });
 
 app.intent('vehicle_type', async (conv, { vehicle }) => {
-  // Respond with the user's lucky number and end the conversation.
-  conv.ask(vehicle as Response);
+  if (vehicle === 'CV' || vehicle === 'coach') {
+    conv.ask('唔好意思，我現時未支持呢個車種嘅車位資訊！');
+    return;
+  }
+
+  let { latitude, longitude }: any = conv.device.location?.coordinates;
+
+  if (latitude === undefined || longitude === undefined) {
+    conv.ask('唔好意思，我未有你嘅GPS位置！');
+    return
+  }  
+
+  let location: Location = { latitude, longitude };
+  let parks = await getAvailableParks(vehicle as Vehicle, location);
+  
+  if (parks.length === 0) {
+    conv.ask('現時附近未有空置車位！')
+  } else {
+    conv.ask('Testing');
+  }
 });
 
 const server = express().use(bodyParser.json());

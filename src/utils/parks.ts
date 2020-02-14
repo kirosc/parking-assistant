@@ -1,14 +1,11 @@
 import axios from 'axios';
 import fs from 'fs';
+import { saveToJSON } from '../lib/io';
 
 axios.defaults.baseURL = 'https://api.data.gov.hk/v1/carpark-info-vacancy';
 
 (async () => {
   let res = await transformData();
-
-  fs.mkdir('./dist/data', null, (err) => {
-    if (err) throw err;
-  });
   saveToJSON('./dist/data/parks.json', res);
 })();
 
@@ -37,8 +34,4 @@ async function getInfo(lang: string) {
     params: { lang }
   });
   return res.data.results;
-}
-
-function saveToJSON(path: string, obj: any) {
-  fs.writeFileSync(path, JSON.stringify(obj, null, 2), 'utf-8');
 }
