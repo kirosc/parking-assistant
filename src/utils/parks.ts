@@ -6,7 +6,10 @@ axios.defaults.baseURL = 'https://api.data.gov.hk/v1/carpark-info-vacancy';
 (async () => {
   let res = await transformData();
 
-  saveToJSON('./data/parks.json', res);
+  fs.mkdir('./dist/data', null, (err) => {
+    if (err) throw err;
+  });
+  saveToJSON('./dist/data/parks.json', res);
 })();
 
 // Convert the park info to a key-based data
