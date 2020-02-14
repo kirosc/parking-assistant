@@ -30,6 +30,7 @@ app.intent('actions_intent_PERMISSION', (conv, _, permissionGranted) => {
   } else {
     (<any>conv.data).userName = conv.user.name.given;
     conv.ask(`唔該晒, ${(<any>conv.data).userName}. 請問你揸緊咩車?`);
+    conv.ask(new Suggestions(['私家車', '貨van', '摩托車']));
   }
 });
 
@@ -58,9 +59,6 @@ app.intent('vehicle_type', async (conv, { vehicle }) => {
     for (let i = 0; i < parks.length && i < 5; i++) {
       const park = parks[i];
       const parkInfo = info[park.park_Id];
-      console.log(park);
-      console.log(parkInfo);
-      
 
       items[park.park_Id] = {
         title: parkInfo.name,
@@ -74,7 +72,7 @@ app.intent('vehicle_type', async (conv, { vehicle }) => {
         })
       };
     }
-    conv.ask('以下係附近有空位嘅停車場。選擇其中一個嚟開始導航喇！');
+    conv.ask('以下係附近有空位嘅停車場。選擇其中一個嚟開始導航！');
     conv.ask(
       new List({
         title: '附近2公里內有空位嘅停車場',
