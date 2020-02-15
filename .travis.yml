@@ -9,7 +9,7 @@ branches:
 
 install:
   - npm i
-  - npm i -D now
+  - npm i -D now@16.7.3
 
 script:
   - npm run build
@@ -17,10 +17,7 @@ script:
 
 deploy:
   provider: script
-  script:
-    - bash 
-    - npm run prod <<< $'y\n\ny\nparking-assistant\n'
-    - exit
+  script: npm run prod
   on:
     branch: master
 
