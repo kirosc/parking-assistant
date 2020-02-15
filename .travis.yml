@@ -17,8 +17,10 @@ script:
 
 deploy:
   provider: script
-  script: npm run prod <<< $'y\n\ny\nparking-assistant\n'
-  skip_cleanup: true
+  script:
+    - bash 
+    - npm run prod <<< $'y\n\ny\nparking-assistant\n'
+    - exit
   on:
     branch: master
 
