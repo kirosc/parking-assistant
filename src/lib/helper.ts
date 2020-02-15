@@ -1,7 +1,12 @@
 import axios from 'axios';
 import { Extent, Location, Vehicle } from './interface';
 import { readJSON } from './io';
-import { Image, BasicCard, Button } from 'actions-on-google';
+import {
+  Image,
+  BasicCard,
+  Button,
+  BrowseCarouselItem
+} from 'actions-on-google';
 
 axios.defaults.baseURL = 'https://api.data.gov.hk/v1/carpark-info-vacancy';
 
@@ -63,18 +68,18 @@ export function toString(park: any): string {
         }
       };
 
-      str += '空置車位: ';
+      str += '🚗空置車位: ';
       str += parseVacancy(vacancy);
 
       // Electronic vehicle
       if (vacancyEV) {
-        str += '　電動車: ';
+        str += '\n🔌電動車車位: ';
         str += parseVacancy(vacancyEV);
       }
 
       // Disabled persons
       if (vacancyDIS) {
-        str += '　傷殘: ';
+        str += '\n♿傷殘車位: ';
         str += parseVacancy(vacancyDIS);
       }
       break;
@@ -95,8 +100,8 @@ export function toString(park: any): string {
   return str;
 }
 
-// Return a List response item
-export function buildListItem(park: any, parkInfo: any, vehicle: Vehicle) {
+// RichResponse Item for devices don't have browser
+export function buildItem(park: any, parkInfo: any, vehicle: Vehicle) {
   return {
     title: parkInfo.name,
     description: toString(park[vehicle as string][0]),
@@ -107,20 +112,48 @@ export function buildListItem(park: any, parkInfo: any, vehicle: Vehicle) {
   };
 }
 
-export function buildCard(park: any, parkInfo: any, vehicle: Vehicle): BasicCard {
+// Return a Basic Card
+export function buildCard(
+  park: any,
+  parkInfo: any,
+  vehicle: Vehicle
+): BasicCard {
+  const { name, latitude, longitude } = parkInfo;
   return new BasicCard({
     text: toString(park[vehicle as string][0]),
-    title: parkInfo.name,
+    title: name,
     buttons: new Button({
       title: '導航',
-      url: 'https://assistant.google.com/'
+      url: getDirectionLink({ latitude, longitude })
     }),
     image: new Image({
       url: getImage(parkInfo),
-      alt: parkInfo.name
+      alt: name
     }),
     display: 'CROPPED'
-  })
+  });
+}
+
+// For devices that support browser for navigation
+export function buildeBrowsingCarouselItem(
+  park: any,
+  parkInfo: any,
+  vehicle: Vehicle
+): BrowseCarouselItem {
+  const { name, latitude, longitude } = parkInfo;
+  return new BrowseCarouselItem({
+    title: name,
+    url: getDirectionLink({ latitude, longitude }),
+    description: toString(park[vehicle as string][0]),
+    image: new Image({
+      url: getImage(parkInfo),
+      alt: name
+    })
+  });
+}
+
+function getDirectionLink({ latitude, longitude }: Location): string {
+  return `https://www.google.com/maps/dir/?api=1&destination=${latitude},${longitude}&travelmode=driving`;
 }
 
 // Get vacancy of parks
