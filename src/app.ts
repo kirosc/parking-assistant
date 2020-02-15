@@ -1,4 +1,6 @@
 import express from 'express';
+import * as Sentry from '@sentry/node';
+import { RewriteFrames } from '@sentry/integrations';
 import bodyParser from 'body-parser';
 import {
   dialogflow,
@@ -14,6 +16,29 @@ import {
   buildCard
 } from './lib/helper';
 import { readJSON } from './lib/io';
+
+require('dotenv').config();
+
+// Sentry Configuration
+declare global {
+  namespace NodeJS {
+    interface Global {
+      __rootdir__: string;
+    }
+  }
+}
+
+global.__rootdir__ = __dirname || process.cwd();
+
+if (process.env.NODE_ENV === 'production') {
+  console.log(process.env.SENTRY_KEY);
+  Sentry.init({
+    dsn: `https://${process.env.SENTRY_KEY}@sentry.io/2542862`,
+    integrations: [new RewriteFrames({
+      root: global.__rootdir__
+    })]
+  });
+}
 
 const port = process.env.PORT || 3000;
 // Instantiate the Dialogflow client.
