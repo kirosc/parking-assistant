@@ -5,7 +5,7 @@
       "SENTRY_KEY": "@sentry_key_parking_assistant"
   },
   "functions": {
-    "api/*.js": {
+    "api/app.js": {
       "includeFiles": "*.js.map"
     }
   },

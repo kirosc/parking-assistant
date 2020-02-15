@@ -16,8 +16,6 @@ export async function getAvailableParks(
 
   let res = await getVacancy(vehicleTypes, extent);
   const parkInfo = readJSON('parks');
-  console.log('#######');
-  console.log(res);
 
   res = res.filter((park: any) => {
     if (park.hasOwnProperty(vehicleTypes)) {
@@ -131,7 +129,7 @@ async function getVacancy(vehicleTypes: Vehicle, extent?: string) {
     params: {
       data: 'vacancy',
       vehicleTypes,
-      // extent,
+      extent,
       lang: 'zh_TW'
     }
   });
