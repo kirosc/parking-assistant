@@ -4,11 +4,15 @@ import {
   dialogflow,
   Permission,
   Suggestions,
-  Image,
-  List
+  List,
+  Response
 } from 'actions-on-google';
 import { Location, Vehicle } from './lib/interface';
-import { getAvailableParks, toString } from './lib/helper';
+import {
+  getAvailableParks,
+  buildListItem,
+  buildCard
+} from './lib/helper';
 import { readJSON } from './lib/io';
 
 const port = process.env.PORT || 3000;
@@ -55,30 +59,30 @@ app.intent('vehicle_type', async (conv, { vehicle }) => {
   } else {
     let info = readJSON('parks');
     let items: any = {};
+    let prompt: string, response: Response;
 
-    for (let i = 0; i < parks.length && i < 5; i++) {
-      const park = parks[i];
+    if (parks.length === 1) {
+      const park = parks[0];
       const parkInfo = info[park.park_Id];
 
-      items[park.park_Id] = {
-        title: parkInfo.name,
-        description: toString(park[vehicle as string][0]),
-        image: new Image({
-          url:
-            parkInfo.renditionUrls?.thumbnail ||
-            parkInfo.renditionUrls?.carpark_photo ||
-            'https://img.icons8.com/officel/120/000000/parking.png',
-          alt: parkInfo.name
-        })
-      };
-    }
-    conv.ask('以下係附近有空位嘅停車場。選擇其中一個嚟開始導航！');
-    conv.ask(
-      new List({
+      prompt = '以下係附近唯一有空位嘅停車場。';
+      response = buildCard(park, parkInfo, vehicle as Vehicle);
+    } else {
+      for (let i = 0; i < parks.length && i < 30; i++) {
+        const park = parks[i];
+        const parkInfo = info[park.park_Id];
+        items[park.park_Id] = buildListItem(park, parkInfo, vehicle as Vehicle);
+      }
+
+      prompt = '以下係附近有空位嘅停車場。選擇其中一個嚟開始導航！';
+      response = new List({
         title: '附近2公里內有空位嘅停車場',
         items
-      })
-    );
+      });
+    }
+
+    conv.ask(prompt);
+    conv.ask(response);
   }
 });
 

@@ -1,12 +1,9 @@
 import axios from 'axios';
 import { Extent, Location, Vehicle } from './interface';
+import { readJSON } from './io';
+import { Image, BasicCard, Button } from 'actions-on-google';
 
 axios.defaults.baseURL = 'https://api.data.gov.hk/v1/carpark-info-vacancy';
-
-getAvailableParks('privateCar', {
-  latitude: 22.458203,
-  longitude: 113.995683
-});
 
 // Get all parks that has vacancy of a certain vehicle type within the radius
 export async function getAvailableParks(
@@ -18,7 +15,38 @@ export async function getAvailableParks(
   const extent = `${leftLong},${botLat},${rightLong},${topLat}`;
 
   let res = await getVacancy(vehicleTypes, extent);
-  return res.filter((park: any) => park[vehicleTypes][0].vacancy > 0);
+  const parkInfo = readJSON('parks');
+  console.log('#######');
+  console.log(res);
+
+  res = res.filter((park: any) => {
+    if (park.hasOwnProperty(vehicleTypes)) {
+      return park[vehicleTypes][0].vacancy > 0;
+    }
+  });
+  res.sort((a: any, b: any) => {
+    let locA: Location = {
+        latitude: parkInfo[a.park_Id].latitude,
+        longitude: parkInfo[a.park_Id].longitude
+      },
+      locB: Location = {
+        latitude: parkInfo[b.park_Id].latitude,
+        longitude: parkInfo[b.park_Id].longitude
+      };
+
+    let disA = getDistance(location, locA),
+      disB = getDistance(location, locB);
+
+    if (disA < disB) {
+      return -1;
+    } else if (disA === disB) {
+      return 0;
+    } else {
+      return 1;
+    }
+  });
+
+  return res;
 }
 
 export function toString(park: any): string {
@@ -35,20 +63,20 @@ export function toString(park: any): string {
         } else {
           return '❓停車場未能提供數據';
         }
-      }
-      
+      };
+
       str += '空置車位: ';
       str += parseVacancy(vacancy);
 
       // Electronic vehicle
       if (vacancyEV) {
-        str += ' 電動車: ';
+        str += '　電動車: ';
         str += parseVacancy(vacancyEV);
       }
 
       // Disabled persons
       if (vacancyDIS) {
-        str += ' 傷殘: ';
+        str += '　傷殘: ';
         str += parseVacancy(vacancyDIS);
       }
       break;
@@ -61,9 +89,40 @@ export function toString(park: any): string {
         str += '❓停車場未能提供數據';
       }
       break;
+    case 'C':
+      str += '⛔關閉';
+      break;
   }
 
   return str;
+}
+
+// Return a List response item
+export function buildListItem(park: any, parkInfo: any, vehicle: Vehicle) {
+  return {
+    title: parkInfo.name,
+    description: toString(park[vehicle as string][0]),
+    image: new Image({
+      url: getImage(parkInfo),
+      alt: parkInfo.name
+    })
+  };
+}
+
+export function buildCard(park: any, parkInfo: any, vehicle: Vehicle): BasicCard {
+  return new BasicCard({
+    text: toString(park[vehicle as string][0]),
+    title: parkInfo.name,
+    buttons: new Button({
+      title: '導航',
+      url: 'https://assistant.google.com/'
+    }),
+    image: new Image({
+      url: getImage(parkInfo),
+      alt: parkInfo.name
+    }),
+    display: 'CROPPED'
+  })
 }
 
 // Get vacancy of parks
@@ -72,7 +131,7 @@ async function getVacancy(vehicleTypes: Vehicle, extent?: string) {
     params: {
       data: 'vacancy',
       vehicleTypes,
-      extent,
+      // extent,
       lang: 'zh_TW'
     }
   });
@@ -92,6 +151,33 @@ function getExtent({ latitude, longitude }: Location, radius: number): Extent {
   return { topLat, botLat, leftLong, rightLong };
 }
 
+// Get distance between two locations in km
+function getDistance(loc1: Location, loc2: Location): number {
+  let { latitude: lat1, longitude: lon1 } = loc1;
+  let { latitude: lat2, longitude: lon2 } = loc2;
+  let earthRadiusKm = 6371;
+
+  let dLat = toRadians(lat2 - lat1);
+  let dLon = toRadians(lon2 - lon1);
+
+  lat1 = toRadians(lat1);
+  lat2 = toRadians(lat2);
+
+  let a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.sin(dLon / 2) * Math.sin(dLon / 2) * Math.cos(lat1) * Math.cos(lat2);
+  let c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return earthRadiusKm * c;
+}
+
 function toRadians(angle: number): number {
   return angle * (Math.PI / 180);
+}
+
+function getImage(parkInfo: any): string {
+  return (
+    parkInfo.renditionUrls?.thumbnail ||
+    parkInfo.renditionUrls?.carpark_photo ||
+    'https://img.icons8.com/officel/120/000000/parking.png'
+  );
 }
