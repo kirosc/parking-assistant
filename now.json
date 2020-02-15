@@ -1,0 +1,15 @@
+{
+  "version": 2,
+  "env": {
+      "SENTRY_KEY": "@sentry_key_parking_assistant"
+  },
+  "functions": {
+    "api/*.js": {
+      "includeFiles": "*.js.map"
+    }
+  },
+  "routes": [
+    { "src": "/fulfillment", "dest": "api/app.js" }
+  ],
+  "regions": ["sfo1"]
+}

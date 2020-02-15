@@ -109,3 +109,4 @@ dist
 # Custom
 data/
 docs/
+.now

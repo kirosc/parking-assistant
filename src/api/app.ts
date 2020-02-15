@@ -9,13 +9,13 @@ import {
   List,
   Response
 } from 'actions-on-google';
-import { Location, Vehicle } from './lib/interface';
+import { Location, Vehicle } from '../lib/interface';
 import {
   getAvailableParks,
   buildListItem,
   buildCard
-} from './lib/helper';
-import { readJSON } from './lib/io';
+} from '../lib/helper';
+import { readJSON } from '../lib/io';
 
 require('dotenv').config();
 

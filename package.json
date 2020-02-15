@@ -6,7 +6,9 @@
   "scripts": {
     "start": "set NODE_ENV=production && node dist/app.js",
     "dev": " set NODE_ENV=development && nodemon src/app.ts",
-    "build": "tsc -p tsconfig.production.json"
+    "build": "tsc -p tsconfig.production.json",
+    "prod": "now --prod dist -A now.json --token=$NOW_TOKEN",
+    "update": "node dist/utils/parks.js"
   },
   "author": "Kiros Choi",
   "license": "GPL-3.0-or-later",
@@ -17,7 +19,8 @@
     "axios": "^0.19.2",
     "body-parser": "^1.19.0",
     "dotenv": "^8.2.0",
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "now": "^17.0.3"
   },
   "devDependencies": {
     "nodemon": "^2.0.2",

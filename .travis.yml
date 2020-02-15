@@ -1,0 +1,29 @@
+language: node_js
+
+node_js:
+  - node
+
+branches:
+  only:
+    - master
+
+install:
+  - npm i
+  - npm i -D now
+
+script:
+  - npm run build
+  - npm run update
+
+deploy:
+  provider: script
+  script: npm run prod <<< $'y\n\ny\nparking-assistant\n'
+  skip_cleanup: true
+  on:
+    branch: master
+
+notifications:
+  email:
+    recipients:
+      - kiroschoi@outlook.com
+    on_success: always
