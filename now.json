@@ -1,6 +1,5 @@
 {
   "version": 2,
-  "name": "parking-assistant",
   "env": {
       "SENTRY_KEY": "@sentry_key_parking_assistant"
   },
