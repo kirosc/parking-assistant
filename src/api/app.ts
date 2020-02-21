@@ -94,7 +94,7 @@ app.intent('vehicle_type', async (conv, { vehicle }) => {
           );
         }
 
-        prompt = '以下係附近2公里內有空位嘅停車場。選擇其中一個嚟開始導航！';
+        prompt = '以下係附近2公里內有空位嘅停車場，選擇其中一個嚟開始導航啦！';
         response = new BrowseCarousel({ items });
       } else {
         items = {};
