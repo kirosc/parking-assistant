@@ -9,7 +9,7 @@ branches:
 
 install:
   - npm i
-  - npm i -g now@16.7.3
+  - npm i -g now@17.0.3
 
 script:
   - npm run build

@@ -1,6 +1,5 @@
 {
-  "name": "parking-assistant",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Find parking space by Google Assistant",
   "main": "index.js",
   "scripts": {
