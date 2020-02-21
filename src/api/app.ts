@@ -38,6 +38,7 @@ app.intent('Default Welcome Intent', conv => {
 app.intent('actions_intent_PERMISSION', (conv, _, permissionGranted) => {
   if (!permissionGranted) {
     conv.ask('拜拜!');
+    conv.close();
   } else {
     (<any>conv.data).userName = conv.user.name.given;
     conv.ask(`唔該晒, ${(<any>conv.data).userName}. 請問你揸緊咩車?`);
@@ -48,13 +49,16 @@ app.intent('actions_intent_PERMISSION', (conv, _, permissionGranted) => {
 app.intent('vehicle_type', async (conv, { vehicle }) => {
   if (vehicle === 'CV' || vehicle === 'coach') {
     conv.ask('唔好意思，我現時未支持呢個車種嘅車位資訊！');
+    conv.close();
     return;
   }
 
   let { latitude, longitude }: any = conv.device.location?.coordinates;
 
   if (latitude === undefined || longitude === undefined) {
-    conv.ask('唔好意思，我未有你嘅GPS位置！');
+    conv.ask('唔好意思，我拎唔到你嘅GPS位置！');
+    conv.ask('請遲啲再試過。');
+    conv.close();
     return;
   }
   
@@ -66,6 +70,8 @@ app.intent('vehicle_type', async (conv, { vehicle }) => {
 
   if (parks.length === 0) {
     conv.ask('現時附近未有空置車位！');
+    conv.close();
+    return;
   } else {
     const info = readJSON('parks');
     let items: BrowseCarouselItem[] | OptionItems<CarouselOptionItem>;
@@ -105,7 +111,8 @@ app.intent('vehicle_type', async (conv, { vehicle }) => {
 
     conv.ask(prompt);
     conv.ask(response);
-    conv.ask(new Suggestions(['私家車', '貨van', '電單車']));
+    conv.close();
+    return;
   }
 });
 
