@@ -4,7 +4,7 @@ export function saveToJSON(path: string, obj: any) {
   fs.mkdir(`${__dirname}/../data`, null, (err) => {
     if (err) throw err;
   });
-  fs.writeFileSync(path, JSON.stringify(obj, null, 2), 'utf-8');
+  fs.writeFileSync(path, JSON.stringify(obj), 'utf-8');
 }
 
 export function readJSON(file: string) {
