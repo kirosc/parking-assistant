@@ -6,7 +6,7 @@
     "start": "set NODE_ENV=production && node dist/api/app.js",
     "dev": " set NODE_ENV=development && nodemon src/api/app.ts",
     "build": "tsc -p tsconfig.production.json",
-    "prod": "now --prod dist -A now.json --token=$NOW_TOKEN",
+    "prod": "now --prod dist/src -A now.json --token=$NOW_TOKEN",
     "update": "node dist/src/utils/parks.js",
     "test": "nyc mocha dist/test",
     "posttest": "nyc report --reporter=json"

@@ -7,7 +7,7 @@ Parking Assistant for Google Assistant
 <br>
 
 ![GitHub](https://img.shields.io/github/license/kirosc/parking-assistant)
-[![Build Status](https://travis-ci.com/kirosc/parking-assistant.svg?token=p6TvvAnPzzDGWBPMwPBS&branch=master)](https://travis-ci.com/kirosc/parking-assistant)
+[![Build Status](https://travis-ci.com/kirosc/parking-assistant.svg?branch=master)](https://travis-ci.com/kirosc/parking-assistant)
 [![Google Assistant Action](https://img.shields.io/badge/%F0%9F%85%96%20Google%20Assistant-Action-blue)](https://assistant.google.com/services/a/uid/0000009bf1dc181f?hl=zh-HK)
 
 </h1>
@@ -15,7 +15,7 @@ Parking Assistant for Google Assistant
 
 ## Introduction
 
-A [**Google Assistant**](https://assistant.google.com/) [**Action**](https://assistant.google.com/) to help drivers find a nearby parking space. Search over 200 publicly and privately owned car parks real-time parking vacancies data.
+A [**Google Assistant**](https://assistant.google.com/) [**Action**](https://assistant.google.com/) to help drivers find a nearby parking space in Hong Kong. Search over 200 publicly and privately owned car parks real-time parking vacancies data.
 
 Supported vehicle types
 
