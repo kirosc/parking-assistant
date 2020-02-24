@@ -52,54 +52,6 @@ export async function getAvailableParks(
   return res;
 }
 
-export function toString(park: any): string {
-  let str = '';
-
-  switch (park.vacancy_type) {
-    case 'A':
-      const { vacancy, vacancyEV, vacancyDIS } = park;
-      const parseVacancy = (vacancy: number) => {
-        if (vacancy > 0) {
-          return vacancy;
-        } else if (vacancy === 0) {
-          return '0';
-        } else {
-          return '❓停車場未能提供數據';
-        }
-      };
-
-      str += '🚗空置車位: ';
-      str += parseVacancy(vacancy);
-
-      // Electronic vehicle
-      if (vacancyEV) {
-        str += '\n🔌電動車車位: ';
-        str += parseVacancy(vacancyEV);
-      }
-
-      // Disabled persons
-      if (vacancyDIS) {
-        str += '\n♿傷殘車位: ';
-        str += parseVacancy(vacancyDIS);
-      }
-      break;
-    case 'B':
-      if (park.vacancy > 0) {
-        str += '🈳有空置泊車位';
-      } else if (park.vacancy === 0) {
-        str += '🈵沒有空置泊車位';
-      } else {
-        str += '❓停車場未能提供數據';
-      }
-      break;
-    case 'C':
-      str += '⛔關閉';
-      break;
-  }
-
-  return str;
-}
-
 // RichResponse Item for devices don't have browser
 export function buildItem(park: any, parkInfo: any, vehicle: Vehicle) {
   return {
@@ -150,6 +102,55 @@ export function buildeBrowsingCarouselItem(
       alt: name
     })
   });
+}
+
+// Generate the description of a car park vacancy
+function toString(park: any): string {
+  let str = '';
+
+  switch (park.vacancy_type) {
+    case 'A':
+      const { vacancy, vacancyEV, vacancyDIS } = park;
+      const parseVacancy = (vacancy: number) => {
+        if (vacancy > 0) {
+          return vacancy;
+        } else if (vacancy === 0) {
+          return '0';
+        } else {
+          return '❓停車場未能提供數據';
+        }
+      };
+
+      str += '🚗空置車位: ';
+      str += parseVacancy(vacancy);
+
+      // Electronic vehicle
+      if (vacancyEV) {
+        str += '\n🔌電動車車位: ';
+        str += parseVacancy(vacancyEV);
+      }
+
+      // Disabled persons
+      if (vacancyDIS) {
+        str += '\n♿傷殘車位: ';
+        str += parseVacancy(vacancyDIS);
+      }
+      break;
+    case 'B':
+      if (park.vacancy > 0) {
+        str += '🈳有空置泊車位';
+      } else if (park.vacancy === 0) {
+        str += '🈵沒有空置泊車位';
+      } else {
+        str += '❓停車場未能提供數據';
+      }
+      break;
+    case 'C':
+      str += '⛔關閉';
+      break;
+  }
+
+  return str;
 }
 
 function getDirectionLink({ latitude, longitude }: Location): string {

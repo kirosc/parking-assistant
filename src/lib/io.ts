@@ -2,7 +2,7 @@ import fs from 'fs';
 
 export function saveToJSON(path: string, obj: any) {
   fs.mkdir(`${__dirname}/../data`, null, (err) => {
-    if (err) throw err;
+    if (err) console.log(err);
   });
   fs.writeFileSync(path, JSON.stringify(obj), 'utf-8');
 }
